@@ -28,10 +28,19 @@ public class AuthorController {
 
 
     @GetMapping("/")
-    public ResponseEntity<List<Author>> get( @RequestParam(required = false) String Lastname) {
+    public ResponseEntity<List<Author>> get( @RequestParam(required = false) String LastName,
+                                             @RequestParam(required = false) String FirstName
+                                             ) {
 
-        if (Lastname != null) {
-            List<Author> authors = userRepository.findByLastName(Lastname);
+        if (LastName != null) {
+            List<Author> authors = userRepository.findByLastName(LastName);
+            if (authors.isEmpty()) {
+                throw new ResourceNotFoundException("No authors found");
+            }
+            return ResponseEntity.ok(authors);
+        }
+        if (FirstName != null) {
+            List<Author> authors = userRepository.findByFirstName(FirstName);
             if (authors.isEmpty()) {
                 throw new ResourceNotFoundException("No authors found");
             }

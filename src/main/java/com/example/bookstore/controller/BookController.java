@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,10 +29,36 @@ public class BookController {
 
 
     @GetMapping("/")
-    ResponseEntity<List<Book>> getAllBooks(){
+    ResponseEntity<List<Book>> getAllBooks(@RequestParam(required = false)BigDecimal MinPrice,
+                                           @RequestParam(required = false)BigDecimal MaxPrice){
         List<Book> books = bookService.getAllBooks();
         if (books==null || books.isEmpty()){
             throw new ResourceNotFoundException("Books not found");
+        }
+        if (MinPrice != null && MaxPrice != null){
+            List<Book> filteredBooks = bookService.getBooksByPrice(MinPrice,MaxPrice);
+            if (!filteredBooks.isEmpty()){
+                return ResponseEntity.ok(filteredBooks);
+            }else{
+                throw new ResourceNotFoundException("Books not found");
+            }
+        }
+        if (MinPrice != null){
+            List<Book> filteredBooks = bookService.getBooksByMinPrice(MinPrice);
+            if (!filteredBooks.isEmpty()){
+                return ResponseEntity.ok(filteredBooks);
+            }else{
+                throw new ResourceNotFoundException("Books not found");
+            }
+
+        }
+        if (MaxPrice != null){
+            List<Book> filteredBooks = bookService.getBooksByMaxPrice(MaxPrice);
+            if (!filteredBooks.isEmpty()){
+                return ResponseEntity.ok(filteredBooks);
+            }else{
+                throw new ResourceNotFoundException("Books not found");
+            }
         }
         return ResponseEntity.ok(books);
     }

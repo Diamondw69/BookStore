@@ -88,6 +88,11 @@ public class AuthorService {
         return authorRepository.findAuthorsByLastName(lastName);
     }
 
+    @Transactional(rollbackOn=   {SQLException.class})
+    public List<Author> findByFirstName(String lastName)  {
+        return authorRepository.findAuthorsByFirstName(lastName);
+    }
+
 
 
 

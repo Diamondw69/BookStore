@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -70,6 +71,21 @@ public class BookService {
     @Transactional(rollbackOn= {SQLException.class})
     public void deleteBook(long id) {
         bookRepository.deleteById(id);
+    }
+
+    @Transactional
+    public List<Book> getBooksByPrice(BigDecimal priceMin,BigDecimal priceMax)  {
+        return bookRepository.findBooksByPriceBetween(priceMin,priceMax);
+    }
+
+    @Transactional
+    public List<Book> getBooksByMinPrice(BigDecimal minPrice) {
+        return bookRepository.findBooksByPriceGreaterThan(minPrice);
+    }
+
+    @Transactional
+    public List<Book> getBooksByMaxPrice(BigDecimal maxPrice) {
+        return bookRepository.findBooksByPriceLessThan(maxPrice);
     }
 
 

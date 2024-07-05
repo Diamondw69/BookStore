@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface AuthorRepository extends JpaRepository<Author, Long> {
-    Author findByFirstName(String name);
-    List<Author> findAuthorsByBooks(List<Book> books);
     List<Author> findAuthorsByLastName(String lastName);
+    List<Author> findAuthorsByFirstName(String firstName);
+
 }
