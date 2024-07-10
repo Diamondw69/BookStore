@@ -41,6 +41,7 @@ public class AuthorService {
         Optional<Author> author = authorRepository.findById(id);
         if (author.isPresent()) {
             Author updateAuthor = author.get();
+
             if (updateAuthorDTO.getFirstName() != null) {
                 updateAuthor.setFirstName(updateAuthorDTO.getFirstName());
             }
