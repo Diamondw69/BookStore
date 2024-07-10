@@ -12,5 +12,4 @@ import java.util.Optional;
 public interface AuthorRepository extends JpaRepository<Author, Long> {
     List<Author> findAuthorsByLastName(String lastName);
     List<Author> findAuthorsByFirstName(String firstName);
-
 }

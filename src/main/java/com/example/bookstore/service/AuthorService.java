@@ -4,9 +4,8 @@ import com.example.bookstore.dto.UpdateAuthorDTO;
 import com.example.bookstore.entity.Author;
 import com.example.bookstore.entity.Book;
 import com.example.bookstore.repository.AuthorRepository;
-import com.example.bookstore.repository.BookRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -16,28 +15,18 @@ import java.util.Optional;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
+@RequiredArgsConstructor
 public class AuthorService {
-
 
     private final AuthorRepository authorRepository;
 
-    @Autowired
-    public AuthorService(AuthorRepository authorRepository) {
-        this.authorRepository = authorRepository;
-    }
-
-
-    @Transactional(rollbackOn= {SQLException.class})
     public List<Author> getAll() {
         return authorRepository.findAll();
     }
 
-
-    @Transactional(rollbackOn= {SQLException.class})
     public Author getById(Long id) {
         return authorRepository.findById(id).orElse(null);
     }
-
 
     @Transactional(rollbackOn= {SQLException.class})
     public Author create(Author author) {
@@ -49,10 +38,8 @@ public class AuthorService {
 
     @Transactional(rollbackOn= {SQLException.class})
     public Author update(Long id, UpdateAuthorDTO updateAuthorDTO) {
-
         Optional<Author> author = authorRepository.findById(id);
         if (author.isPresent()) {
-
             Author updateAuthor=author.get();
             if (updateAuthorDTO.getFirstName() != null){
                 updateAuthor.setFirstName(updateAuthorDTO.getFirstName());
@@ -72,7 +59,6 @@ public class AuthorService {
                 }
             }
             return authorRepository.save(updateAuthor);
-
         }else{
             return null;
         }
@@ -83,19 +69,11 @@ public class AuthorService {
         authorRepository.deleteById(id);
     }
 
-    @Transactional(rollbackOn=   {SQLException.class})
     public List<Author> findByLastName(String lastName)  {
         return authorRepository.findAuthorsByLastName(lastName);
     }
 
-    @Transactional(rollbackOn=   {SQLException.class})
     public List<Author> findByFirstName(String lastName)  {
         return authorRepository.findAuthorsByFirstName(lastName);
     }
-
-
-
-
-
-
 }

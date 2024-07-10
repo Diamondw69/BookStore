@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,6 +75,7 @@ public class BookControllerTest {
         book.setIsbn("123456789");
         book.setGenre("Genre");
         book.setPrice(BigDecimal.valueOf(49874));
+        book.setPublicationDate(LocalDate.now());
 
         Mockito.when(this.bookService.createBook(Mockito.any(Book.class))).thenReturn(book);
 

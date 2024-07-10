@@ -6,7 +6,7 @@ import com.example.bookstore.entity.Book;
 import com.example.bookstore.exception.ResourceNotFoundException;
 import com.example.bookstore.service.BookService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -15,45 +15,37 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/book")
 public class BookController {
 
-
-    BookService bookService;
-
-    @Autowired
-    public BookController(BookService bookService){
-        this.bookService = bookService;
-    }
-
+    private final BookService bookService;
 
     @GetMapping("/")
-    ResponseEntity<List<Book>> getAllBooks(@RequestParam(required = false)BigDecimal MinPrice,
-                                           @RequestParam(required = false)BigDecimal MaxPrice){
+    ResponseEntity<List<Book>> getAllBooks(@RequestParam(required = false) BigDecimal minPrice, @RequestParam(required = false) BigDecimal maxPrice){
         List<Book> books = bookService.getAllBooks();
         if (books==null || books.isEmpty()){
             throw new ResourceNotFoundException("Books not found");
         }
-        if (MinPrice != null && MaxPrice != null){
-            List<Book> filteredBooks = bookService.getBooksByPrice(MinPrice,MaxPrice);
+        if (minPrice != null && maxPrice != null){
+            List<Book> filteredBooks = bookService.getBooksByPrice(minPrice, maxPrice);
             if (!filteredBooks.isEmpty()){
                 return ResponseEntity.ok(filteredBooks);
             }else{
                 throw new ResourceNotFoundException("Books not found");
             }
         }
-        if (MinPrice != null){
-            List<Book> filteredBooks = bookService.getBooksByMinPrice(MinPrice);
+        if (minPrice != null){
+            List<Book> filteredBooks = bookService.getBooksByMinPrice(minPrice);
             if (!filteredBooks.isEmpty()){
                 return ResponseEntity.ok(filteredBooks);
             }else{
                 throw new ResourceNotFoundException("Books not found");
             }
-
         }
-        if (MaxPrice != null){
-            List<Book> filteredBooks = bookService.getBooksByMaxPrice(MaxPrice);
+        if (maxPrice != null){
+            List<Book> filteredBooks = bookService.getBooksByMaxPrice(maxPrice);
             if (!filteredBooks.isEmpty()){
                 return ResponseEntity.ok(filteredBooks);
             }else{
@@ -98,6 +90,5 @@ public class BookController {
         }else{
             throw new ResourceNotFoundException("Book not found");
         }
-
     }
 }

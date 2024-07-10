@@ -6,47 +6,35 @@ import com.example.bookstore.entity.Author;
 import com.example.bookstore.exception.ResourceNotFoundException;
 import com.example.bookstore.service.AuthorService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
+@RequiredArgsConstructor
 @Controller
 @RequestMapping(value = "/author")
 public class AuthorController {
 
-    AuthorService userRepository;
-
-    @Autowired
-    public AuthorController(AuthorService userRepository) {
-        this.userRepository = userRepository;
-    }
-
+    private final AuthorService userRepository;
 
     @GetMapping("/")
-    public ResponseEntity<List<Author>> get( @RequestParam(required = false) String LastName,
-                                             @RequestParam(required = false) String FirstName
-                                             ) {
-
-        if (LastName != null) {
-            List<Author> authors = userRepository.findByLastName(LastName);
+    public ResponseEntity<List<Author>> get(@RequestParam(required = false) String lastName, @RequestParam(required = false) String firstName) {
+        if (lastName != null) {
+            List<Author> authors = userRepository.findByLastName(lastName);
             if (authors.isEmpty()) {
                 throw new ResourceNotFoundException("No authors found");
             }
             return ResponseEntity.ok(authors);
         }
-        if (FirstName != null) {
-            List<Author> authors = userRepository.findByFirstName(FirstName);
+        if (firstName != null) {
+            List<Author> authors = userRepository.findByFirstName(firstName);
             if (authors.isEmpty()) {
                 throw new ResourceNotFoundException("No authors found");
             }
             return ResponseEntity.ok(authors);
         }
-
         List<Author> authors = userRepository.getAll();
         if (authors.isEmpty()) {
             throw new ResourceNotFoundException("No authors found");
@@ -84,8 +72,4 @@ public class AuthorController {
         userRepository.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-
-
-
 }

@@ -4,7 +4,7 @@ import com.example.bookstore.dto.UpdateBookDTO;
 import com.example.bookstore.entity.Book;
 import com.example.bookstore.repository.BookRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -13,23 +13,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class BookService {
 
+    private final BookRepository bookRepository;
 
-    BookRepository bookRepository;
-
-    @Autowired
-    public BookService(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
-
-
-    @Transactional(rollbackOn= {SQLException.class})
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
-    @Transactional(rollbackOn= {SQLException.class})
     public Optional<Book> getBookById(long id) {
         return bookRepository.findById(id);
     }
@@ -73,20 +65,15 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    @Transactional
     public List<Book> getBooksByPrice(BigDecimal priceMin,BigDecimal priceMax)  {
         return bookRepository.findBooksByPriceBetween(priceMin,priceMax);
     }
 
-    @Transactional
     public List<Book> getBooksByMinPrice(BigDecimal minPrice) {
         return bookRepository.findBooksByPriceGreaterThan(minPrice);
     }
 
-    @Transactional
     public List<Book> getBooksByMaxPrice(BigDecimal maxPrice) {
         return bookRepository.findBooksByPriceLessThan(maxPrice);
     }
-
-
 }
