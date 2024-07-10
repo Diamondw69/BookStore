@@ -23,71 +23,55 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping("/")
-    ResponseEntity<List<Book>> getAllBooks(@RequestParam(required = false) BigDecimal minPrice, @RequestParam(required = false) BigDecimal maxPrice){
-        List<Book> books = bookService.getAllBooks();
-        if (books==null || books.isEmpty()){
-            throw new ResourceNotFoundException("Books not found");
+    ResponseEntity<List<Book>> getAllBooks(@RequestParam(required = false) BigDecimal minPrice, @RequestParam(required = false) BigDecimal maxPrice) {
+        List<Book> books;
+
+        if (minPrice != null && maxPrice != null) {
+            books = bookService.getBooksByPrice(minPrice, maxPrice);
+        } else if (minPrice != null) {
+            books = bookService.getBooksByMinPrice(minPrice);
+        } else if (maxPrice != null) {
+            books = bookService.getBooksByMaxPrice(maxPrice);
+        } else {
+            books = bookService.getAllBooks();
         }
-        if (minPrice != null && maxPrice != null){
-            List<Book> filteredBooks = bookService.getBooksByPrice(minPrice, maxPrice);
-            if (!filteredBooks.isEmpty()){
-                return ResponseEntity.ok(filteredBooks);
-            }else{
-                throw new ResourceNotFoundException("Books not found");
-            }
-        }
-        if (minPrice != null){
-            List<Book> filteredBooks = bookService.getBooksByMinPrice(minPrice);
-            if (!filteredBooks.isEmpty()){
-                return ResponseEntity.ok(filteredBooks);
-            }else{
-                throw new ResourceNotFoundException("Books not found");
-            }
-        }
-        if (maxPrice != null){
-            List<Book> filteredBooks = bookService.getBooksByMaxPrice(maxPrice);
-            if (!filteredBooks.isEmpty()){
-                return ResponseEntity.ok(filteredBooks);
-            }else{
-                throw new ResourceNotFoundException("Books not found");
-            }
-        }
+
         return ResponseEntity.ok(books);
     }
 
     @PostMapping("/")
-    ResponseEntity<Book> createBook(@Valid @RequestBody Book book){
+    ResponseEntity<Book> createBook(@Valid @RequestBody Book book) {
         Book newBook = bookService.createBook(book);
         return ResponseEntity.ok(newBook);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Optional<Book>> getBookById(@PathVariable("id") long id){
+    ResponseEntity<Optional<Book>> getBookById(@PathVariable("id") long id) {
         Optional<Book> book = bookService.getBookById(id);
-        if (book.isEmpty()){
+        if (book.isEmpty()) {
             throw new ResourceNotFoundException("Book with id " + id + " not found");
         }
         return ResponseEntity.ok(book);
     }
 
     @PatchMapping("/{id}")
-    ResponseEntity<Book> updateBook(@PathVariable("id") long id,@RequestBody UpdateBookDTO book){
+    ResponseEntity<Book> updateBook(@PathVariable("id") long id, @RequestBody UpdateBookDTO book) {
         Optional<Book> bookOptional = bookService.getBookById(id);
-        if(bookOptional.isPresent()){
-            Book updatedBook = bookService.updateBook(id,book);
+        if (bookOptional.isPresent()) {
+            Book updatedBook = bookService.updateBook(id, book);
             return ResponseEntity.ok(updatedBook);
-        }else{
+        } else {
             throw new ResourceNotFoundException("Book not found");
         }
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<?> deleteBook(@PathVariable("id") long id){
+    ResponseEntity<?> deleteBook(@PathVariable("id") long id) {
         Optional<Book> bookOptional = bookService.getBookById(id);
-        if(bookOptional.isPresent()){
+        if (bookOptional.isPresent()) {
             bookService.deleteBook(id);
             return ResponseEntity.noContent().build();
-        }else{
+        } else {
             throw new ResourceNotFoundException("Book not found");
         }
     }

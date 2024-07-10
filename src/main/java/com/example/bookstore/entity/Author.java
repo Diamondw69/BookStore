@@ -39,7 +39,7 @@ public class Author {
     @NotBlank(message = "Biography is mandatory")
     private String biography;
 
-    @OneToMany(mappedBy = "author",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Book> books;
 

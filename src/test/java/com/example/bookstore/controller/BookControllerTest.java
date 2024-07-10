@@ -27,7 +27,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@WebMvcTest(value = BookController.class,excludeAutoConfiguration = SecurityAutoConfiguration.class)
+@WebMvcTest(value = BookController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class BookControllerTest {
 
@@ -37,14 +37,14 @@ public class BookControllerTest {
     @MockBean
     BookService bookService;
 
-    private List<Book> getBookList(){
+    private List<Book> getBookList() {
         Book book = new Book();
         book.setTitle("Book Title");
         book.setDescription("Book Description");
         book.setIsbn("123456789");
         book.setGenre("Genre");
         book.setPrice(BigDecimal.valueOf(49874));
-        return List.of(book,new Book());
+        return List.of(book, new Book());
     }
 
 
@@ -52,19 +52,14 @@ public class BookControllerTest {
     void testFindAll() throws Exception {
         Mockito.when(this.bookService.getAllBooks()).thenReturn(getBookList());
 
-
-        mvc.perform(get("http://localhost:8080/book/"))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        mvc.perform(get("http://localhost:8080/book/")).andDo(print()).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     void testFindById() throws Exception {
         Mockito.when(this.bookService.getBookById(1)).thenReturn(Optional.of(new Book()));
 
-        mvc.perform(get("http://localhost:8080/book/1"))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        mvc.perform(get("http://localhost:8080/book/1")).andDo(print()).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
@@ -82,19 +77,8 @@ public class BookControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String bookJson = objectMapper.writeValueAsString(book);
 
-        mvc.perform(post("http://localhost:8080/book/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(bookJson))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Book Title"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("Book Description"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.isbn").value("123456789"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.genre").value("Genre"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.price").value(49874));
+        mvc.perform(post("http://localhost:8080/book/").contentType(MediaType.APPLICATION_JSON).content(bookJson)).andDo(print()).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Book Title")).andExpect(MockMvcResultMatchers.jsonPath("$.description").value("Book Description")).andExpect(MockMvcResultMatchers.jsonPath("$.isbn").value("123456789")).andExpect(MockMvcResultMatchers.jsonPath("$.genre").value("Genre")).andExpect(MockMvcResultMatchers.jsonPath("$.price").value(49874));
     }
-
 
 
 }

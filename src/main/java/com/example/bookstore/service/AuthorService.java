@@ -28,7 +28,7 @@ public class AuthorService {
         return authorRepository.findById(id).orElse(null);
     }
 
-    @Transactional(rollbackOn= {SQLException.class})
+    @Transactional(rollbackOn = {SQLException.class})
     public Author create(Author author) {
         for (Book book : author.getBooks()) {
             book.setAuthor(author);
@@ -36,44 +36,48 @@ public class AuthorService {
         return authorRepository.save(author);
     }
 
-    @Transactional(rollbackOn= {SQLException.class})
+    @Transactional(rollbackOn = {SQLException.class})
     public Author update(Long id, UpdateAuthorDTO updateAuthorDTO) {
         Optional<Author> author = authorRepository.findById(id);
         if (author.isPresent()) {
-            Author updateAuthor=author.get();
-            if (updateAuthorDTO.getFirstName() != null){
+            Author updateAuthor = author.get();
+            if (updateAuthorDTO.getFirstName() != null) {
                 updateAuthor.setFirstName(updateAuthorDTO.getFirstName());
             }
-            if (updateAuthorDTO.getLastName() != null){
+            if (updateAuthorDTO.getLastName() != null) {
                 updateAuthor.setLastName(updateAuthorDTO.getLastName());
             }
-            if (updateAuthorDTO.getBirthDate() != null){
+            if (updateAuthorDTO.getBirthDate() != null) {
                 updateAuthor.setBirthDate(updateAuthorDTO.getBirthDate());
             }
-            if (updateAuthorDTO.getBiography()  != null){
+            if (updateAuthorDTO.getBiography() != null) {
                 updateAuthor.setBiography(updateAuthorDTO.getBiography());
             }
-            if (!isEmpty(updateAuthorDTO.getBooks())){
+            if (!isEmpty(updateAuthorDTO.getBooks())) {
                 for (Book book : updateAuthorDTO.getBooks()) {
                     updateAuthor.addBook(book);
                 }
             }
             return authorRepository.save(updateAuthor);
-        }else{
+        } else {
             return null;
         }
     }
 
-    @Transactional(rollbackOn=  {SQLException.class})
+    @Transactional(rollbackOn = {SQLException.class})
     public void delete(Long id) {
         authorRepository.deleteById(id);
     }
 
-    public List<Author> findByLastName(String lastName)  {
+    public List<Author> findByLastName(String lastName) {
         return authorRepository.findAuthorsByLastName(lastName);
     }
 
-    public List<Author> findByFirstName(String lastName)  {
+    public List<Author> findByFirstName(String lastName) {
         return authorRepository.findAuthorsByFirstName(lastName);
+    }
+
+    public List<Author> findByLastNameAndFirstName(String lastName, String firstName) {
+        return authorRepository.findAuthorsByFirstNameAndLastName(lastName, firstName);
     }
 }

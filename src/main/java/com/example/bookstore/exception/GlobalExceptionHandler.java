@@ -41,10 +41,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage())
-        );
-        BaseResponse response  = new BaseResponse();
+        ex.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        BaseResponse response = new BaseResponse();
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setMessage(ex.getMessage());
         response.setData(errors);
@@ -52,7 +50,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request)  {
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         BaseResponse response = new BaseResponse();
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setMessage("Invalid JSON format");
@@ -75,7 +73,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<BaseResponse> handleAllUncaughtException(Exception exception, WebRequest request) {
         BaseResponse response = new BaseResponse();
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.setMessage("An unexpected error occurred:"+ exception.getMessage());
+        response.setMessage("An unexpected error occurred:" + exception.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

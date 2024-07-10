@@ -23,7 +23,7 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message  = "Title cannot be blank")
+    @NotBlank(message = "Title cannot be blank")
     private String title;
 
     @NotBlank(message = "Isbn cannot be blank")
@@ -36,7 +36,7 @@ public class Book {
     private LocalDate publicationDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name  = "author_id")
+    @JoinColumn(name = "author_id")
     @JsonBackReference
     private Author author;
 
