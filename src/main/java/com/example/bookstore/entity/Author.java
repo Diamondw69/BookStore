@@ -40,7 +40,7 @@ public class Author {
     private String biography;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference(value = "author-books")
     private List<Book> books;
 
     public void addBook(Book book) {
