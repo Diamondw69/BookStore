@@ -6,6 +6,7 @@ import com.example.bookstore.Enum.OrderStatus;
 import com.example.bookstore.configuration.OrderStateMachineListener;
 import com.example.bookstore.dto.UpdateOrderDTO;
 import com.example.bookstore.entity.Order;
+import com.example.bookstore.exception.OrderProcessingException;
 import com.example.bookstore.exception.ResourceNotFoundException;
 import com.example.bookstore.repository.OrderRepository;
 import jakarta.transaction.Transactional;
@@ -73,14 +74,20 @@ public class OrderService {
 
     @Transactional
     public Order updateOrderStatus(Long orderId, OrderEvent event) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         StateMachine<OrderStatus, OrderEvent> sm = build(order);
 
         sm.sendEvent(Mono.just(MessageBuilder.withPayload(event).build())).subscribe();
 
+        if (order.getStatus() == sm.getState().getId()) {
+            throw new IllegalStateException("Incorrect order status");
+        }
         order.setStatus(sm.getState().getId());
+
         return orderRepository.save(order);
+
     }
 
     private StateMachine<OrderStatus, OrderEvent> build(Order order) {

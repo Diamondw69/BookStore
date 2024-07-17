@@ -29,6 +29,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(OrderProcessingException.class)
+    public ResponseEntity<BaseResponse> handleOrderProcessingException(OrderProcessingException e) {
+        BaseResponse response = new BaseResponse();
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setMessage(e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<BaseResponse> handleConstraintViolationException(ConstraintViolationException e) {
         BaseResponse response = new BaseResponse();
