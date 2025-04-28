@@ -52,27 +52,29 @@ jobs:
     if: github.ref == 'refs/heads/main'
     env:
       IMAGE_NAME: diamondw69/bookstore
+      IMAGE_TAG: ${{ github.sha }}
     steps:
       - name: Deploy to Swarm via SSH
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.SWARM_HOST }}
+          host:     ${{ secrets.SWARM_HOST }}
           username: ${{ secrets.SWARM_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          key:      ${{ secrets.SSH_PRIVATE_KEY }}
+          port:     ${{ secrets.SSH_PORT }}
           script: |
-            TAG=${GITHUB_SHA}
-            FULL_IMAGE=${IMAGE_NAME}:${TAG}
+            # full image is injected by Actions
+            FULL_IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
 
-            echo "Pulling $FULL_IMAGE..."
-            docker pull $FULL_IMAGE
+            echo "Pulling $FULL_IMAGE"
+            docker pull "$FULL_IMAGE"
 
             if docker service inspect bookstore_app >/dev/null 2>&1; then
-              echo "Updating service with $FULL_IMAGE..."
+              echo "Updating service with $FULL_IMAGE"
               docker service update \
-                --image $FULL_IMAGE \
+                --image "$FULL_IMAGE" \
                 bookstore_app
             else
-              echo "First-time deploy, using docker stack deploy…"
+              echo "First-time deploy"
               docker stack deploy -c docker-compose.yml bookstore
             fi
+
