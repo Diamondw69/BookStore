@@ -1,29 +1,72 @@
-name: CI
+name: CI & Docker Swarm Deploy
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+
+env:
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/bookstore
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
     steps:
-    
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
-
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: '17'
-          cache: maven     
+          cache: maven
 
-      - name: Build and run tests with Maven
+      - name: Build & test with Maven
         run: mvn --batch-mode clean verify
 
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Set up Docker Buildx & metadata
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push Docker image
+        id: meta
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to Swarm via SSH
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SWARM_HOST }}         
+          username: ${{ secrets.SWARM_USER }}    
+          key: ${{ secrets.SSH_PRIVATE_KEY }}    
+          port: ${{ secrets.SSH_PORT }}          
+          script: |
+            # pull the newly-built image
+            docker pull $IMAGE_NAME:${{ github.sha }}
+            # try to update an existing service
+            if docker service inspect bookstore_app >/dev/null 2>&1; then
+              docker service update \
+                --image $IMAGE_NAME:${{ github.sha }} \
+                bookstore_app
+            else
+              # first-time deploy: use your Compose file
+              docker stack deploy -c docker-compose.yml bookstore
+            fi
