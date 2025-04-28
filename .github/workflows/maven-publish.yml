@@ -64,7 +64,7 @@ jobs:
             # try to update an existing service
             if docker service inspect bookstore_app >/dev/null 2>&1; then
               docker service update \
-                --image $IMAGE_NAME:${{ github.sha }} \
+                --image  ${{ env.IMAGE_NAME }}:${{ github.sha }} \
                 bookstore_app
             else
               # first-time deploy: use your Compose file
