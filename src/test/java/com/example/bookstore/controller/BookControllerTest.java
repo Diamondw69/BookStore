@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import org.springframework.http.MediaType;
@@ -29,6 +30,12 @@ import java.util.Optional;
 
 @WebMvcTest(value = BookController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 @AutoConfigureMockMvc(addFilters = false)
+@SpringBootTest(properties = {
+        """
+                spring.autoconfigure.exclude=\
+                    org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,\
+                    org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration"""
+})
 public class BookControllerTest {
 
 //    @Autowired
