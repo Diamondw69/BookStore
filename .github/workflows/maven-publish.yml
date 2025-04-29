@@ -54,19 +54,21 @@ jobs:
       - name: Deploy to Swarm via SSH
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.SWARM_HOST }}         
-          username: ${{ secrets.SWARM_USER }}    
-          key: ${{ secrets.SSH_PRIVATE_KEY }}    
-          port: ${{ secrets.SSH_PORT }}          
+          host:     ${{ secrets.SWARM_HOST }}
+          username: ${{ secrets.SWARM_USER }}
+          key:      ${{ secrets.SSH_PRIVATE_KEY }}
+          port:     ${{ secrets.SSH_PORT }}
           script: |
-            # pull the newly-built image
-            docker pull $IMAGE_NAME:${{ github.sha }}
-            # try to update an existing service
+            set -euo pipefail
+            FULL_IMAGE="diamondw69/bookstore:${{ github.sha }}"
+            echo "Pulling $FULL_IMAGE"
+            docker pull "$FULL_IMAGE"
             if docker service inspect bookstore_app >/dev/null 2>&1; then
-              docker service update \
-                --image $IMAGE_NAME:${{ github.sha }} \
-                bookstore_app
+              echo "Service exists → updating bookstore_app"
+              docker service update --image "$FULL_IMAGE" bookstore_app
             else
-              # first-time deploy: use your Compose file
+              echo "First-time deploy → deploying bookstore stack"
               docker stack deploy -c docker-compose.yml bookstore
             fi
+
+
