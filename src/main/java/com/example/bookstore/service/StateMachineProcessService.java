@@ -43,7 +43,9 @@ public class StateMachineProcessService {
         Long applicationId = (Long) context.getExtendedState().getVariables().get("bookId");
         Book application = certificateApplicationRepository.findById(applicationId).orElseThrow(() ->
                 new RuntimeException("Application not found"));
-        application.setQuantity(application.getQuantity() - 1);
+        Order order = orderRepository.findById(application.getId()).orElseThrow(() ->
+                new RuntimeException("Application not found"));
+        application.setQuantity(application.getQuantity() - order.getQuantity());
         certificateApplicationRepository.saveAndFlush(application);
     }
 
@@ -51,7 +53,9 @@ public class StateMachineProcessService {
         Long applicationId = (Long) context.getExtendedState().getVariables().get("bookId");
         Book application = certificateApplicationRepository.findById(applicationId).orElseThrow(() ->
                 new RuntimeException("Application not found"));
-        application.setQuantity(application.getQuantity() + 1);
+        Order order = orderRepository.findById(application.getId()).orElseThrow(() ->
+                new RuntimeException("Application not found"));
+        application.setQuantity(application.getQuantity() + order.getQuantity());
         certificateApplicationRepository.saveAndFlush(application);
     }
     

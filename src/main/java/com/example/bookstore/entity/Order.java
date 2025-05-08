@@ -10,6 +10,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -30,6 +31,9 @@ public class Order {
 
     @NotBlank(message = "customer name should not be blank")
     private String customerName;
+
+    @NotNull(message = "Quantity cannot be null")
+    private Integer quantity;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
