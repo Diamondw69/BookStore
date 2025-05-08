@@ -24,13 +24,9 @@ public class StateMachineExecutionService {
         Long orderId = (Long) context.getExtendedState().getVariables().get("orderId");
         Book application = certificateApplicationRepository.findById(applicationId).orElseThrow(() ->
                 new RuntimeException("Application not found"));
-        log.info("Payment process started");
-        log.info(application.toString());
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
                 new RuntimeException("Application not found"));
-        log.info(order.toString());
         application.setQuantity(application.getQuantity() - order.getQuantity());
-        log.info(application.toString());
         certificateApplicationRepository.saveAndFlush(application);
     }
 
