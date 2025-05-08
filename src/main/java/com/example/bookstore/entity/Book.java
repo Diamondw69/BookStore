@@ -54,4 +54,6 @@ public class Book {
     @NotBlank(message = "Description cannot be blank")
     private String description;
 
+    @NotNull(message = "Quantity cannot be null")
+    private Integer quantity;
 }
