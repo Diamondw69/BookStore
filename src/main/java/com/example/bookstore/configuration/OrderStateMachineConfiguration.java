@@ -2,7 +2,10 @@ package com.example.bookstore.configuration;
 
 import com.example.bookstore.Enum.OrderEvent;
 import com.example.bookstore.Enum.OrderStatus;
+import com.example.bookstore.service.StateMachineProcessService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.EnumStateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
@@ -14,7 +17,10 @@ import java.util.EnumSet;
 
 @Configuration
 @EnableStateMachineFactory
+@RequiredArgsConstructor
 public class OrderStateMachineConfiguration extends EnumStateMachineConfigurerAdapter<OrderStatus, OrderEvent> {
+
+    private final StateMachineProcessService stateMachineProcessService;
 
     @Override
     public void configure(StateMachineConfigurationConfigurer<OrderStatus, OrderEvent> config) throws Exception {
@@ -44,6 +50,7 @@ public class OrderStateMachineConfiguration extends EnumStateMachineConfigurerAd
                     .source(OrderStatus.CONFIRMED)
                     .target(OrderStatus.PAID)
                     .event(OrderEvent.PAY)
+                    .action(onPayment())
                     .and()
                 .withExternal()
                     .source(OrderStatus.PAID)
@@ -59,26 +66,39 @@ public class OrderStateMachineConfiguration extends EnumStateMachineConfigurerAd
                     .source(OrderStatus.NEW)
                     .target(OrderStatus.CANCELLED)
                     .event(OrderEvent.CANCEL)
+                    .action(onCancel())
                     .and()
                 .withExternal()
                     .source(OrderStatus.CONFIRMED)
                     .target(OrderStatus.CANCELLED)
                     .event(OrderEvent.CANCEL)
+                    .action(onCancel())
                     .and()
                 .withExternal()
                     .source(OrderStatus.PAID)
                     .target(OrderStatus.CANCELLED)
                     .event(OrderEvent.CANCEL)
+                    .action(onCancel())
                     .and()
                 .withExternal()
                     .source(OrderStatus.SHIPPED)
                     .target(OrderStatus.CANCELLED)
                     .event(OrderEvent.CANCEL)
+                    .action(onCancel())
                     .and()
                 .withExternal()
                     .source(OrderStatus.DELIVERED)
                     .target(OrderStatus.CANCELLED)
-                    .event(OrderEvent.CANCEL);
+                    .event(OrderEvent.CANCEL)
+                    .action(onCancel());
+    }
+
+    public Action<OrderStatus, OrderEvent> onPayment() {
+        return stateMachineProcessService::onPayment;
+    }
+
+    public Action<OrderStatus, OrderEvent> onCancel() {
+        return stateMachineProcessService::onCancel;
     }
 
 
