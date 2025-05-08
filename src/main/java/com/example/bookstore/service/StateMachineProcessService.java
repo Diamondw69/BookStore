@@ -39,25 +39,7 @@ public class StateMachineProcessService {
         this.orderRepository = orderRepository;
     }
 
-    public void onPayment(StateContext<OrderStatus, OrderEvent> context) {
-        Long applicationId = (Long) context.getExtendedState().getVariables().get("bookId");
-        Book application = certificateApplicationRepository.findById(applicationId).orElseThrow(() ->
-                new RuntimeException("Application not found"));
-        Order order = orderRepository.findById(application.getId()).orElseThrow(() ->
-                new RuntimeException("Application not found"));
-        application.setQuantity(application.getQuantity() - order.getQuantity());
-        certificateApplicationRepository.saveAndFlush(application);
-    }
 
-    public void onCancel(StateContext<OrderStatus, OrderEvent> context) {
-        Long applicationId = (Long) context.getExtendedState().getVariables().get("bookId");
-        Book application = certificateApplicationRepository.findById(applicationId).orElseThrow(() ->
-                new RuntimeException("Application not found"));
-        Order order = orderRepository.findById(application.getId()).orElseThrow(() ->
-                new RuntimeException("Application not found"));
-        application.setQuantity(application.getQuantity() + order.getQuantity());
-        certificateApplicationRepository.saveAndFlush(application);
-    }
     
     public void processApplication(ApplicationExecutorRequest applicationExecutorRequest) {
         try {

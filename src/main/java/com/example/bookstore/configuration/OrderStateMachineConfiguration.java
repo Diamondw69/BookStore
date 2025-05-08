@@ -2,6 +2,7 @@ package com.example.bookstore.configuration;
 
 import com.example.bookstore.Enum.OrderEvent;
 import com.example.bookstore.Enum.OrderStatus;
+import com.example.bookstore.service.StateMachineExecutionService;
 import com.example.bookstore.service.StateMachineProcessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,7 @@ import java.util.EnumSet;
 @RequiredArgsConstructor
 public class OrderStateMachineConfiguration extends EnumStateMachineConfigurerAdapter<OrderStatus, OrderEvent> {
 
-    private final StateMachineProcessService stateMachineProcessService;
+    private final StateMachineExecutionService stateMachineProcessService;
 
     @Override
     public void configure(StateMachineConfigurationConfigurer<OrderStatus, OrderEvent> config) throws Exception {
