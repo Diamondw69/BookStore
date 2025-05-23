@@ -11,6 +11,7 @@ import com.example.bookstore.exception.ResourceNotFoundException;
 import com.example.bookstore.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.access.ReactiveStateMachineAccess;
@@ -32,11 +33,11 @@ public class OrderService {
     private final StateMachineFactory<OrderStatus,OrderEvent> stateMachineFactory;
 
     public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+        return orderRepository.findAllWithDeliveredLast();
     }
 
     public List<Order> getAllOrdersByUserId(Long userId) {
-        return orderRepository.findByUserId(userId);
+        return orderRepository.findByUserIdOrderById(userId);
     }
 
     public Optional<Order> getOrderById(Long id) {
