@@ -67,18 +67,13 @@ public class AuthController {
                 creds.getUsername(), creds.getPassword());
         Authentication auth = authManager.authenticate(token);
         String jwt = jwtUtils.generateToken(auth.getName());
-        String role = userRepo
-                .findByUsername(auth.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("No user “" + auth.getName() + "”"))
-                .getRole();
-        Long userId = userRepo
-                .findByUsername(auth.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("No user “" + auth.getName() + "”"))
-                .getId();
+        User user = userRepo.findByEmail(auth.getName()).get();
         return ResponseEntity.ok(Map.of(
                 "token", jwt,
-                "role",  role,
-                "userId", userId
+                "role",  user.getRole(),
+                "userId", user.getId(),
+                "username", user.getUsername(),
+                "email", user.getEmail()
         ));
     }
 }
