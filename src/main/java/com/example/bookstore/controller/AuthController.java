@@ -44,7 +44,7 @@ public class AuthController {
                     .body(Map.of("error", "Email already in use"));
         }
 
-        String role = "ADMIN";
+        String role = "USER";
 
         User user = new User(req.getEmail(), req.getUsername(), req.getPassword(),role);
         user = userRepo.save(user);
