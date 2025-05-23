@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +44,15 @@ public class OrderController {
     @GetMapping("/")
     public ResponseEntity<List<Order>> getAll() {
         List<Order> orders = orderService.getAllOrders();
+        if (orders.isEmpty()) {
+            throw new ResourceNotFoundException("Orders not found");
+        }
+        return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<List<Order>> getAllByUserId(@PathVariable Long userId) {
+        List<Order> orders = orderService.getAllOrdersByUserId(userId);
         if (orders.isEmpty()) {
             throw new ResourceNotFoundException("Orders not found");
         }
