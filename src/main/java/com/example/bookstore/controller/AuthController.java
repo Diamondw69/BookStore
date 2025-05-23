@@ -71,9 +71,14 @@ public class AuthController {
                 .findByUsername(auth.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("No user “" + auth.getName() + "”"))
                 .getRole();
+        Long userId = userRepo
+                .findByUsername(auth.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("No user “" + auth.getName() + "”"))
+                .getId();
         return ResponseEntity.ok(Map.of(
                 "token", jwt,
-                "role",  role
+                "role",  role,
+                "userId", userId
         ));
     }
 }
