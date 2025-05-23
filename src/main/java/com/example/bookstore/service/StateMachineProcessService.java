@@ -40,7 +40,7 @@ public class StateMachineProcessService {
     }
 
 
-    
+
     public void processApplication(ApplicationExecutorRequest applicationExecutorRequest) {
         try {
             StateMachine<OrderStatus, OrderEvent> stateMachine = build(applicationExecutorRequest.getBookId(),applicationExecutorRequest.getOrderId());
@@ -51,6 +51,7 @@ public class StateMachineProcessService {
 
             stateMachine.sendEvent(Mono.just(MessageBuilder.withPayload(applicationExecutorRequest.getEvent())
                             .setHeader("bookId", applicationExecutorRequest.getBookId())
+                            .setHeader("orderId", applicationExecutorRequest.getOrderId())
                             .build()))
                     .doOnComplete(() -> {
                         OrderStatus newState = stateMachine.getState().getId();
@@ -97,7 +98,8 @@ public class StateMachineProcessService {
                 .orElseThrow(() -> new IllegalArgumentException("Application not found"));
         log.info("Building state machine for application ID: {}", applicationId);
 
-        StateMachine<OrderStatus, OrderEvent> stateMachine = stateMachineFactory.getStateMachine("1");
+        StateMachine<OrderStatus,OrderEvent> stateMachine =
+                stateMachineFactory.getStateMachine(orderId.toString());
         stateMachine.stopReactively().block();
 
         stateMachine.getStateMachineAccessor()
@@ -109,10 +111,13 @@ public class StateMachineProcessService {
                                 OrderEvent> transition, StateMachine<OrderStatus, OrderEvent> stateMachine,
                                                    StateMachine<OrderStatus, OrderEvent> rootStateMachine) {
                             Optional.ofNullable(message).ifPresent(msg -> {
-                                Long applicationId = (Long) msg.getHeaders().getOrDefault("bookId", -1L);
-                                Book application = certificateApplicationRepository.findById(applicationId)
+                                Long bookId  = message.getHeaders().get("bookId",  Long.class);
+                                Long orderId = message.getHeaders().get("orderId", Long.class);
+                                assert bookId != null;
+                                Book application = certificateApplicationRepository.findById(bookId)
                                         .orElseThrow(() -> new IllegalArgumentException("Application not found"));
-                                Order order = orderRepository.findById(applicationId)
+                                assert orderId != null;
+                                Order order = orderRepository.findById(orderId)
                                         .orElseThrow(() -> new IllegalArgumentException("Application not found"));
                                 order.setStatus(state.getId());
                                 certificateApplicationRepository.save(application);
