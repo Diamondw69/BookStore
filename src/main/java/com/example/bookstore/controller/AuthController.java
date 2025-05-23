@@ -67,7 +67,7 @@ public class AuthController {
                 creds.getUsername(), creds.getPassword());
         Authentication auth = authManager.authenticate(token);
         String jwt = jwtUtils.generateToken(auth.getName());
-        User user = userRepo.findByEmail(auth.getName()).get();
+        User user = userRepo.findByUsername(auth.getName()).get();
         return ResponseEntity.ok(Map.of(
                 "token", jwt,
                 "role",  user.getRole(),
